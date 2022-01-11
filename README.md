@@ -1,19 +1,13 @@
 ![image](https://user-images.githubusercontent.com/18011884/148945656-2c880a98-bb22-44dd-9137-effbc5bd015a.png)
-##I'm a 20-year-old lawyer!
+#I'm a 20-year-old lawyer!
+
 ### Hi there 👋
-#🙋‍♂️ About Me
 
-<!--
-**BazZziliuS/BazZziliuS** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
+# 🙋‍♂️ About Me
+#H1🔭 Hello! My name is Korney or BazZziliuS!
 
-Here are some ideas to get you started:
+#H2🌱 II'm currently surviving as best I can.
 
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+#H3👯 I am interested in Python and some other interests & interesting things!
+
+#H4⚡ Fun fact, I love strangling python.
