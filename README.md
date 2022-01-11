@@ -1,4 +1,7 @@
+![image](https://user-images.githubusercontent.com/18011884/148945656-2c880a98-bb22-44dd-9137-effbc5bd015a.png)
+##I'm a 20-year-old lawyer!
 ### Hi there 👋
+#🙋‍♂️ About Me
 
 <!--
 **BazZziliuS/BazZziliuS** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
