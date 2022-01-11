@@ -3,7 +3,6 @@
 <h1 align="center">Hi <img src="https://raw.githubusercontent.com/MartinHeinz/MartinHeinz/master/wave.gif" width="30px">, I'm BazZziliuS</h1>
 <h3 align="center">I'm a 20-year-old lawyer!</h3>
 
-### Hi there 👋
 
 # 🙋‍♂️ About Me
 
