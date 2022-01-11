@@ -1,6 +1,7 @@
-![image](https://user-images.githubusercontent.com/18011884/148945656-2c880a98-bb22-44dd-9137-effbc5bd015a.png)
+<a href="#"><img width="100%" height="auto" src="https://i.imgur.com/iXuL1HG.png" height="175px"/></a>
 
-# I'm a 20-year-old lawyer!
+<h1 align="center">Hi <img src="https://raw.githubusercontent.com/MartinHeinz/MartinHeinz/master/wave.gif" width="30px">, I'm BazZziliuS</h1>
+<h3 align="center">I'm a 20-year-old lawyer!</h3>
 
 ### Hi there 👋
 
@@ -17,3 +18,9 @@
     <a href="https://www.python.org" target="_blank"> <img src="https://img.icons8.com/color/48/000000/python.png"/> </a> 
     <a href="https://www.sublimetext.com" target="_blank"> <img src="https://img.icons8.com/fluency/48/000000/sublime-text.png"/> </a> 
 </p>
+
+## ❤ Views and Followers
+<a href="https://github.com/BazZziliuS/github-profile-views-counter">
+    <img src="https://komarev.com/ghpvc/?username=BazZziliuS">
+</a>
+<a href="https://github.com/BazZziliuS?tab=followers"><img src="https://img.shields.io/github/followers/BazZziliuS?label=Followers&style=social" alt="GitHub Badge"></a>
