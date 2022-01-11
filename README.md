@@ -5,11 +5,8 @@
 ### Hi there 👋
 
 # 🙋‍♂️ About Me
-[TOC]
-#H1🔭 Hello! My name is Korney or BazZziliuS!
 
-#H2🌱 II'm currently surviving as best I can.
-
-#H3👯 I am interested in Python and some other interests & interesting things!
-
-#H4⚡ Fun fact, I love strangling python.
+- 🔭 Hello! My name is Korney or BazZziliuS!
+- 🌱 II'm currently surviving as best I can.
+- 👯 I am interested in Python and some other interests & interesting things!
+- ⚡ Fun fact, I love strangling python.
