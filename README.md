@@ -1,12 +1,12 @@
 <a href="#"><img width="100%" height="auto" src="https://i.imgur.com/iXuL1HG.png" height="175px"/></a>
 
 <h1 align="center">Hi <img src="https://raw.githubusercontent.com/MartinHeinz/MartinHeinz/master/wave.gif" width="30px">, I'm BazZziliuS</h1>
-<h3 align="center">I'm a 20-year-old lawyer!</h3>
+<h3 align="center">I'm a 21-year-old lawyer!</h3>
 
 
 # 🙋‍♂️ About Me
 
-- 🔭 Hello! My name is Korney or BazZziliuS!
+- 🔭 Hello! My name is BazZziliuS!
 - 🌱 II'm currently surviving as best I can.
 - 👯 I am interested in Python and some other interests & interesting things!
 - ⚡ Fun fact, I love strangling python.
