@@ -1,12 +1,6 @@
-<a href="#"><img width="100%" height="auto" src="https://i.imgur.com/iXuL1HG.png" height="175px"/></a>
+# 🙋‍♂️ About Me 
 
-<h1 align="center">Hi,<img data-target="animated-image.replacedImage" alt="68747470733a2f2f6d656469612e67697068792e636f6d2f6d656469612f6876524a434c467a6361737252346961377a2f67697068792e676966" class="AnimatedImagePlayer-animatedImage" src="https://camo.githubusercontent.com/e8e7b06ecf583bc040eb60e44eb5b8e0ecc5421320a92929ce21522dbc34c891/68747470733a2f2f6d656469612e67697068792e636f6d2f6d656469612f6876524a434c467a6361737252346961377a2f67697068792e676966" style="width: 28px; display: block; opacity: 1;"> I'm BazZziliuS</h1>
-<h3 align="center">I'm a 22-year-old lawyer!</h3>
-
-
-# 🙋‍♂️ About Me
-
-- 🔭 Hello! My name is BazZziliuS!
+- 🔭 Hello My name is BazZziliuS!
 - 🌱 II'm currently surviving as best I can.
 - 👯 I am interested in Python and some other interests & interesting things!
 - ⚡ Fun fact, I love strangling python.
@@ -15,9 +9,9 @@
 
 <p align="left"> 
     <a href="https://www.python.org" target="_blank"> <img src="https://img.icons8.com/color/48/000000/python.png"/> </a> 
+    <a href="https://www.lua.org" target="_blank"> <img src="https://img.icons8.com/external-others-iconmarket/48/undefined/external-lua-file-types-others-iconmarket-2.png"/> </a> 
     <a href="https://code.visualstudio.com" target="_blank"> <img src="https://img.icons8.com/fluency/48/000000/visual-studio-code-2019.png"/> </a> 
     <a href="https://www.sublimetext.com" target="_blank"> <img src="https://img.icons8.com/fluency/48/000000/sublime-text.png"/> </a> 
-    <a href="https://www.lua.org" target="_blank"> <img src="https://img.icons8.com/external-others-iconmarket/48/undefined/external-lua-file-types-others-iconmarket-2.png"/> </a> 
 </p>
 
 ## 📈 Statistics:
@@ -41,3 +35,15 @@
     <img src="https://komarev.com/ghpvc/?username=BazZziliuS">
 </a>
 <a href="https://github.com/BazZziliuS?tab=followers"><img src="https://img.shields.io/github/followers/BazZziliuS?label=Followers&style=social" alt="GitHub Badge"></a>
+
+
+## 📣 Social links
+<img alt="Discord" src="https://img.shields.io/discord/861310264024105020?logo=discord&logoColor=white&label=Discord&color=blue"> <img alt="YouTube Channel Subscribers" src="https://img.shields.io/youtube/channel/subscribers/UCLpdDWOkm38370AttvMRbWQ"> <img alt="YouTube Channel Views" src="https://img.shields.io/youtube/channel/views/UCLpdDWOkm38370AttvMRbWQ">
+
+### 🧰 PC config
+![icon](https://img.shields.io/badge/NVIDIA-GTX1050TI-76B900?style=for-the-badge&logo=nvidia&logoColor=white)
+![icon](https://img.shields.io/badge/Intel-Core_i7_2th-0071C5?style=for-the-badge&logo=intel&logoColor=white)
+![icon](https://img.shields.io/badge/RAM-8GB_1600MHz-0078D6?style=for-the-badge&logo=corsair&logoColor=white)
+![icon](https://img.shields.io/badge/Windows-10_22h2-0078D6?style=for-the-badge&logo=windows&logoColor=white)
+![icon](https://img.shields.io/badge/SSD-240GB_A400-d4dcd3?style=for-the-badge&logo=kingstontechnology&logoColor=white)
+
