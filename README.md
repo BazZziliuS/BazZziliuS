@@ -40,6 +40,9 @@
 ## 📣 Social links
 <img alt="Discord" src="https://img.shields.io/discord/861310264024105020?logo=discord&logoColor=white&label=Discord&color=blue"> <img alt="YouTube Channel Subscribers" src="https://img.shields.io/youtube/channel/subscribers/UCLpdDWOkm38370AttvMRbWQ"> <img alt="YouTube Channel Views" src="https://img.shields.io/youtube/channel/views/UCLpdDWOkm38370AttvMRbWQ">
 
+[![Hosting](https://github.com/user-attachments/assets/8c39537e-bc00-4432-b108-8d967ad4d92e)](https://aeza.net/?ref=507375)
+
+
 ### 🧰 PC config
 ![icon](https://img.shields.io/badge/NVIDIA-RTX4060-76B900?style=for-the-badge&logo=nvidia&logoColor=white)
 ![icon](https://img.shields.io/badge/Intel-Core_i7_11th-0071C5?style=for-the-badge&logo=intel&logoColor=white)
