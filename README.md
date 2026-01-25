@@ -27,21 +27,14 @@
     </tr>
 </table>
 
-
-
-
 ## ❤ Views and Followers
 <a href="https://github.com/BazZziliuS/github-profile-views-counter">
     <img src="https://komarev.com/ghpvc/?username=BazZziliuS">
 </a>
 <a href="https://github.com/BazZziliuS?tab=followers"><img src="https://img.shields.io/github/followers/BazZziliuS?label=Followers&style=social" alt="GitHub Badge"></a>
 
-
 ## 📣 Social links
 <img alt="Discord" src="https://img.shields.io/discord/861310264024105020?logo=discord&logoColor=white&label=Discord&color=blue"> <img alt="YouTube Channel Subscribers" src="https://img.shields.io/youtube/channel/subscribers/UCLpdDWOkm38370AttvMRbWQ"> <img alt="YouTube Channel Views" src="https://img.shields.io/youtube/channel/views/UCLpdDWOkm38370AttvMRbWQ">
-
-[![Hosting](https://github.com/user-attachments/assets/8c39537e-bc00-4432-b108-8d967ad4d92e)](https://aeza.net/?ref=507375)
-
 
 ### 🧰 PC config
 ![icon](https://img.shields.io/badge/NVIDIA-RTX4060-76B900?style=for-the-badge&logo=nvidia&logoColor=white)
