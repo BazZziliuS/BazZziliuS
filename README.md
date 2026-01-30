@@ -1,48 +1,80 @@
-# 🙋‍♂️ About Me 
+### Hello, World! I'm BazZziliuS 🌍
 
-- 🔭 Hello My name is BazZziliuS!
-- 🌱 II'm currently surviving as best I can.
-- 👯 I am interested in Python and some other interests & interesting things!
-- ⚡ Fun fact, I love strangling python.
+[![Discord](https://img.shields.io/badge/-Discord-5865F2?style=flat&logo=discord&logoColor=white)](https://fuix.io/discord)
+[![YouTube](https://img.shields.io/badge/-Youtube-FF0000?style=flat&logo=youtube&logoColor=white)](https://youtube.com/@BazZziliuS)
+[![GitHub](https://img.shields.io/badge/-Github-242A2D?style=flat&logo=Github&logoColor=white)](https://github.com/BazZziliuS)
+![Profile Views](https://komarev.com/ghpvc/?username=BazZziliuS)
 
-## 🚀 Languages and Tools:
+<p align="left">
+Python Developer and Server Administrator specializing in bot development and automation systems. Passionate about building reliable Discord & Telegram bots, optimizing Minecraft server infrastructure, and creating efficient automation pipelines. Always learning and exploring new technologies.
+<br>
+<br>
 
-<p align="left"> 
-    <a href="https://www.python.org" target="_blank"> <img src="https://img.icons8.com/color/48/000000/python.png"/> </a> 
-    <a href="https://www.lua.org" target="_blank"> <img src="https://img.icons8.com/external-others-iconmarket/48/undefined/external-lua-file-types-others-iconmarket-2.png"/> </a> 
-    <a href="https://code.visualstudio.com" target="_blank"> <img src="https://img.icons8.com/fluency/48/000000/visual-studio-code-2019.png"/> </a> 
-    <a href="https://www.sublimetext.com" target="_blank"> <img src="https://img.icons8.com/fluency/48/000000/sublime-text.png"/> </a> 
+- 💻 **Server Administrator** at **CenturyMine Network**
+- 🔭 My main focus is on **Bot Development**, **Server Automation**, and **Performance Optimization**
+- 🤖 Building **Discord & Telegram bots** with Python
+- ⚙️ Working with **Minecraft mods** and **server infrastructure**
+- 🐍 Passionate about **Python**, **FastAPI**, and **automation**
+
 </p>
 
-## 📈 Statistics:
+---
 
-<table>
+### 🛠️ Tech Stack & Tools
+
+#### Languages
+![Python](https://img.shields.io/badge/-Python-3776AB?style=flat&logoColor=white&logo=python)
+![Java](https://img.shields.io/badge/-Java-ED8B00?style=flat&logoColor=white&logo=openjdk)
+![Lua](https://img.shields.io/badge/-Lua-2C2D72?style=flat&logoColor=white&logo=lua)
+
+#### Backend & Frameworks
+![FastAPI](https://img.shields.io/badge/-FastAPI-009688?style=flat&logoColor=white&logo=fastapi)
+![SQLAlchemy](https://img.shields.io/badge/-SQLAlchemy-D71F00?style=flat&logoColor=white&logo=sqlalchemy)
+
+#### Bot Development
+![Disnake](https://img.shields.io/badge/-Disnake-5865F2?style=flat&logoColor=white&logo=discord)
+![Aiogram](https://img.shields.io/badge/-Aiogram-26A5E4?style=flat&logoColor=white&logo=telegram)
+
+#### Databases
+![PostgreSQL](https://img.shields.io/badge/-PostgreSQL-316192?style=flat&logo=postgresql&logoColor=white)
+![SQLite](https://img.shields.io/badge/-SQLite-003B57?style=flat&logo=sqlite&logoColor=white)
+
+#### DevOps & Tools
+![Docker](https://img.shields.io/badge/-Docker-2496ED?style=flat&logoColor=white&logo=docker)
+![Git](https://img.shields.io/badge/-Git-F05032?style=flat&logoColor=white&logo=git)
+![GitHub Actions](https://img.shields.io/badge/-GitHub%20Actions-2088FF?style=flat&logo=github-actions&logoColor=white)
+![Linux](https://img.shields.io/badge/-Linux-FCC624?style=flat&logo=linux&logoColor=black)
+
+#### Minecraft Development
+![NeoForge](https://img.shields.io/badge/-NeoForge-1C1C1C?style=flat&logo=minecraft&logoColor=white)
+![Mixin](https://img.shields.io/badge/-Mixin-FF6B6B?style=flat&logo=java&logoColor=white)
+
+<br>
+
+<center>
+  <table>
     <tr>
-      <td align="center" style="padding=0;width=50%;">
-        <img align="center" style="padding=0;" src="https://github-readme-stats.vercel.app/api/?username=BazZziliuS&show_icons=true&title_color=4F8CC9&text_color=9f9f9f&bg_color=00000000&hide_border=true&icon_color=4F8CC9&hide_title=true&count_private=true" />
+      <td>
+        <img src="https://github-readme-stats.vercel.app/api?username=BazZziliuS&show_icons=true&theme=tokyonight&hide_border=true&count_private=true&include_all_commits=true" />
       </td>
-      <td align="center" style="padding=0;width=50%;">
-        <img align="center" style="padding=0;" src="https://github-readme-stats.quantumlytangled.vercel.app/api/top-langs/?username=BazZziliuS&layout=compact&show_icons=true&title_color=4F8CC9&text_color=9f9f9f&bg_color=00000000&hide_border=true&icon_color=00000000&count_private=true" />
+      <td>
+        <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=BazZziliuS&show_icons=true&theme=tokyonight&hide_border=true&layout=compact&langs_count=8&count_private=true" />
       </td>
-    </tr>
-</table>
+    </tr>   
+  </table>
+</center>
 
-## ❤ Views and Followers
-<a href="https://github.com/BazZziliuS/github-profile-views-counter">
-    <img src="https://komarev.com/ghpvc/?username=BazZziliuS">
-</a>
-<a href="https://github.com/BazZziliuS?tab=followers"><img src="https://img.shields.io/github/followers/BazZziliuS?label=Followers&style=social" alt="GitHub Badge"></a>
+---
 
-## 📣 Social links
-<img alt="Discord" src="https://img.shields.io/discord/861310264024105020?logo=discord&logoColor=white&label=Discord&color=blue"> <img alt="YouTube Channel Subscribers" src="https://img.shields.io/youtube/channel/subscribers/UCLpdDWOkm38370AttvMRbWQ"> <img alt="YouTube Channel Views" src="https://img.shields.io/youtube/channel/views/UCLpdDWOkm38370AttvMRbWQ">
+### 📫 How to reach me
 
-### 🧰 PC config
-![icon](https://img.shields.io/badge/NVIDIA-RTX4060-76B900?style=for-the-badge&logo=nvidia&logoColor=white)
-![icon](https://img.shields.io/badge/Intel-Core_i7_11th-0071C5?style=for-the-badge&logo=intel&logoColor=white)
-![icon](https://img.shields.io/badge/RAM-32GB_3200MHz-0078D6?style=for-the-badge&logo=adata&logoColor=white)
-![icon](https://img.shields.io/badge/Windows-11_TINY-0078D6?style=for-the-badge&logo=windows&logoColor=white)
-![icon](https://img.shields.io/badge/SSD_M.2-512GB_Ally_AL1284-d4dcd3?style=for-the-badge&logo=ardor&logoColor=white)
-![icon](https://img.shields.io/badge/SSD-240GB_A400-d4dcd3?style=for-the-badge&logo=kingstontechnology&logoColor=white)
-![icon](https://img.shields.io/badge/HDD-2TB_ST2000DM001-d4dcd3?style=for-the-badge&logo=seagate&logoColor=white)
+- 💬 **Discord**: Join our [server](https://fuix.io/discord)
+- 💼 **GitHub**: Follow me for updates
 
+---
 
+<div align="center">
+
+**Thanks for visiting!** ⭐
+
+</div>
