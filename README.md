@@ -24,6 +24,8 @@ I build the services, bots, and tools that keep online communities running.
 
 **Native and game tooling.** Windows utilities in Rust, desktop apps in Electron and PyQt, and Minecraft mods in Java.
 
+**AI-assisted engineering.** Coding agents across the whole cycle: writing and refactoring code, review, debugging, tests, and documentation. LLMs built into bots and services.
+
 <br>
 
 ## Selected work
@@ -41,6 +43,13 @@ I build the services, bots, and tools that keep online communities running.
 
 ## The stack
 
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/stack-dark.svg">
+    <img src="assets/stack-light.svg" width="640" alt="Python, Java, TypeScript, JavaScript, Rust, Lua, FastAPI, Next.js, React, Tailwind CSS, PostgreSQL, SQLite, Supabase, Docker, Linux, GitHub Actions, Git, Gradle">
+  </picture>
+</p>
+
 | | |
 | :-- | :-- |
 | **Languages** | Python · Java · TypeScript · JavaScript · Rust · Go · Lua |
@@ -52,6 +61,7 @@ I build the services, bots, and tools that keep online communities running.
 | **Testing and quality** | pytest · Vitest · Playwright · Ruff · mypy |
 | **DevOps** | Linux · Docker · Docker Compose · GitHub Actions · semantic-release · Git |
 | **Game development** | NeoForge · Mixin · Gradle · KubeJS · GravitLauncher · RCON |
+| **AI** | Claude Code · ChatGPT · Codex · Local LLMs (Gemma, Qwen) · LLM APIs · MCP |
 
 <br>
 
