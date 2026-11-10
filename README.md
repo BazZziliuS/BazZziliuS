@@ -1,80 +1,60 @@
-### Hello, World! I'm BazZziliuS 🌍
-
-[![Discord](https://img.shields.io/badge/-Discord-5865F2?style=flat&logo=discord&logoColor=white)](https://fuix.io/discord)
-[![YouTube](https://img.shields.io/badge/-Youtube-FF0000?style=flat&logo=youtube&logoColor=white)](https://youtube.com/@BazZziliuS)
-[![GitHub](https://img.shields.io/badge/-Github-242A2D?style=flat&logo=Github&logoColor=white)](https://github.com/BazZziliuS)
-![Profile Views](https://komarev.com/ghpvc/?username=BazZziliuS)
-
-<p align="left">
-Python Developer and Server Administrator specializing in bot development and automation systems. Passionate about building reliable Discord & Telegram bots, optimizing Minecraft server infrastructure, and creating efficient automation pipelines. Always learning and exploring new technologies.
-<br>
-<br>
-
-- 💻 **Server Administrator** at **CenturyMine Network**
-- 🔭 My main focus is on **Bot Development**, **Server Automation**, and **Performance Optimization**
-- 🤖 Building **Discord & Telegram bots** with Python
-- ⚙️ Working with **Minecraft mods** and **server infrastructure**
-- 🐍 Passionate about **Python**, **FastAPI**, and **automation**
-
-</p>
-
----
-
-### 🛠️ Tech Stack & Tools
-
-#### Languages
-![Python](https://img.shields.io/badge/-Python-3776AB?style=flat&logoColor=white&logo=python)
-![Java](https://img.shields.io/badge/-Java-ED8B00?style=flat&logoColor=white&logo=openjdk)
-![Lua](https://img.shields.io/badge/-Lua-2C2D72?style=flat&logoColor=white&logo=lua)
-
-#### Backend & Frameworks
-![FastAPI](https://img.shields.io/badge/-FastAPI-009688?style=flat&logoColor=white&logo=fastapi)
-![SQLAlchemy](https://img.shields.io/badge/-SQLAlchemy-D71F00?style=flat&logoColor=white&logo=sqlalchemy)
-
-#### Bot Development
-![Disnake](https://img.shields.io/badge/-Disnake-5865F2?style=flat&logoColor=white&logo=discord)
-![Aiogram](https://img.shields.io/badge/-Aiogram-26A5E4?style=flat&logoColor=white&logo=telegram)
-
-#### Databases
-![PostgreSQL](https://img.shields.io/badge/-PostgreSQL-316192?style=flat&logo=postgresql&logoColor=white)
-![SQLite](https://img.shields.io/badge/-SQLite-003B57?style=flat&logo=sqlite&logoColor=white)
-
-#### DevOps & Tools
-![Docker](https://img.shields.io/badge/-Docker-2496ED?style=flat&logoColor=white&logo=docker)
-![Git](https://img.shields.io/badge/-Git-F05032?style=flat&logoColor=white&logo=git)
-![GitHub Actions](https://img.shields.io/badge/-GitHub%20Actions-2088FF?style=flat&logo=github-actions&logoColor=white)
-![Linux](https://img.shields.io/badge/-Linux-FCC624?style=flat&logo=linux&logoColor=black)
-
-#### Minecraft Development
-![NeoForge](https://img.shields.io/badge/-NeoForge-1C1C1C?style=flat&logo=minecraft&logoColor=white)
-![Mixin](https://img.shields.io/badge/-Mixin-FF6B6B?style=flat&logo=java&logoColor=white)
-
-<br>
-
-<center>
-  <table>
-    <tr>
-      <td>
-        <img src="https://github-readme-stats.vercel.app/api?username=BazZziliuS&show_icons=true&theme=tokyonight&hide_border=true&count_private=true&include_all_commits=true" />
-      </td>
-      <td>
-        <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=BazZziliuS&show_icons=true&theme=tokyonight&hide_border=true&layout=compact&langs_count=8&count_private=true" />
-      </td>
-    </tr>   
-  </table>
-</center>
-
----
-
-### 📫 How to reach me
-
-- 💬 **Discord**: Join our [server](https://fuix.io/discord)
-- 💼 **GitHub**: Follow me for updates
-
----
-
 <div align="center">
 
-**Thanks for visiting!** ⭐
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/hero-dark.svg">
+  <img src="assets/hero-light.svg" width="720" alt="BazZziliuS. Backend. Bots. Infrastructure.">
+</picture>
+
+**Python developer and server administrator.**<br>
+I build the services, bots, and tools that keep online communities running.
+
+[Projects](#selected-work) &nbsp;·&nbsp; [Stack](#the-stack) &nbsp;·&nbsp; [Contact](#get-in-touch)
 
 </div>
+
+<br>
+
+## What I do
+
+**Backend and APIs.** Async Python services, webhook integrations, and API client libraries published on PyPI.
+
+**Bots and automation.** Telegram and Discord bots with clean architecture, migrations, and localization.
+
+**Infrastructure.** Linux servers, Docker deployments, CI/CD pipelines, and monitoring. Currently server administrator at **CenturyMine Network**.
+
+**Native and game tooling.** Windows utilities in Rust, desktop apps in Electron and PyQt, and Minecraft mods in Java.
+
+<br>
+
+## Selected work
+
+| Project | What it does | Built with |
+| :-- | :-- | :-- |
+| **[KillSwitch](https://github.com/BazZziliuS/KillSwitch)** | Per-app internet kill switch for Windows. Cuts selected apps off when the VPN drops. | Rust, egui, Windows API |
+| **[boostylib](https://github.com/BazZziliuS/boostylib)** | Async Python library for the Boosty API, [published on PyPI](https://pypi.org/project/boostylib/). | Python, httpx, Pydantic, pytest |
+| **[Cloudea Blog](https://github.com/BazZziliuS/cloudea-blog)** | [Blog and documentation platform](https://blog.cloudea.org/) with automated releases. | Next.js, React, Tailwind CSS, Supabase, Playwright |
+| **[AioFrame](https://github.com/BazZziliuS/AioFrame)** | Telegram bot template with a repository layer, migrations, and i18n. | Python, aiogram, SQLAlchemy, Alembic |
+| **[StealthChat](https://github.com/BazZziliuS/StealthChat)** | Chrome extension that adds end-to-end encryption to web messengers. | JavaScript, Chrome Extensions |
+| **[Mekanism Stack Processor](https://github.com/BazZziliuS/Mekanism-Stack-Processor)** | Minecraft mod that adds batch processing to Mekanism machines. | Java, NeoForge, Gradle |
+
+<br>
+
+## The stack
+
+| | |
+| :-- | :-- |
+| **Languages** | Python · Java · TypeScript · JavaScript · Rust · Go · Lua |
+| **Backend** | FastAPI · SQLAlchemy · Alembic · Pydantic · httpx · aiohttp · APScheduler |
+| **Bots** | aiogram · Disnake |
+| **Frontend** | Next.js · React · Tailwind CSS · shadcn/ui |
+| **Desktop** | Electron · PyQt6 · egui · Windows API |
+| **Data** | PostgreSQL · SQLite · Supabase |
+| **Testing and quality** | pytest · Vitest · Playwright · Ruff · mypy |
+| **DevOps** | Linux · Docker · Docker Compose · GitHub Actions · semantic-release · Git |
+| **Game development** | NeoForge · Mixin · Gradle · KubeJS · GravitLauncher · RCON |
+
+<br>
+
+## Get in touch
+
+[Discord](https://fuix.io/discord) &nbsp;·&nbsp; [YouTube](https://youtube.com/@BazZziliuS) &nbsp;·&nbsp; [Blog](https://blog.cloudea.org/)
