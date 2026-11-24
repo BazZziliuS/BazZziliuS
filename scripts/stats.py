@@ -21,6 +21,7 @@ import json
 import os
 import sys
 import re
+import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 from datetime import date, datetime, timedelta, timezone
@@ -109,7 +110,7 @@ query($login: String!, $after: String) {
         contributions { totalCount }
       }
     }
-    repositories(ownerAffiliations: OWNER, isFork: false, privacy: PUBLIC,
+    repositories(ownerAffiliations: OWNER, isFork: false,
                  first: 100, after: $after) {
       totalCount
       pageInfo { hasNextPage endCursor }
@@ -208,6 +209,18 @@ def fetch_commits(token: str, user: dict) -> tuple[list[datetime], dict[str, tup
         if count:
             per_repo[full] = (private, count)
     return times, per_repo
+
+
+def pr_count(token: str, fallback: int) -> int:
+    """PRs opened in the past year. Search sees private repos the token can read;
+    the contributions API leaves them out."""
+    since = (datetime.now(timezone.utc) - timedelta(days=365)).strftime("%Y-%m-%d")
+    try:
+        q = urllib.parse.quote(f"type:pr author:{LOGIN} created:>={since}")
+        return http_json(f"https://api.github.com/search/issues?q={q}&per_page=1", token)["total_count"]
+    except Exception as exc:
+        print(f"warn: pr search: {exc}", file=sys.stderr)
+        return fallback
 
 
 def fetch_source(source: str, repo: str, token: str) -> dict:
@@ -334,7 +347,7 @@ def card_overview(user: dict, t: dict) -> str:
         (fmt(active), "active days"),
         (f"{current} d", "current streak"),
         (f"{longest} d", "longest streak"),
-        (fmt(cc["totalPullRequestContributions"]), "pull requests"),
+        (fmt(user.get("prs", cc["totalPullRequestContributions"])), "pull requests"),
     ]
     col = inner / len(tiles)
     for i, (value, label) in enumerate(tiles):
@@ -536,6 +549,7 @@ def main() -> None:
     if not token:
         raise SystemExit("Set GITHUB_TOKEN")
     user = fetch_profile(token)
+    user["prs"] = pr_count(token, user["contributionsCollection"]["totalPullRequestContributions"])
     times, per_repo = fetch_commits(token, user)
     shipped = fetch_shipped(token)
     OUT.mkdir(exist_ok=True)
