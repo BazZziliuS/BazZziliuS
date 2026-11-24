@@ -27,6 +27,8 @@ jobs:
         env:
           # Optional PAT secret; the default token sees public data only.
           GITHUB_TOKEN: ${{ secrets.STATS_TOKEN || github.token }}
+          # Calendar is read as the public profile shows it.
+          PUBLIC_TOKEN: ${{ github.token }}
         run: python scripts/stats.py ${{ github.repository_owner }}
       - name: Commit if changed
         run: |

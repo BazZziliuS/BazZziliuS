@@ -211,13 +211,38 @@ def fetch_commits(token: str, user: dict) -> tuple[list[datetime], dict[str, tup
     return times, per_repo
 
 
+CALENDAR_Q = """
+query($login: String!) {
+  user(login: $login) {
+    contributionsCollection {
+      totalPullRequestContributions
+      contributionCalendar {
+        totalContributions
+        weeks { contributionDays { date contributionCount } }
+      }
+    }
+  }
+}
+"""
+
+
+def use_public_calendar(user: dict, public_token: str) -> None:
+    """Take the calendar as the public profile shows it. A fine-grained token as the
+    viewer can see fewer private contributions than an anonymous visitor does."""
+    cc = gql(public_token, CALENDAR_Q, login=LOGIN)["user"]["contributionsCollection"]
+    mine = user["contributionsCollection"]
+    if cc["contributionCalendar"]["totalContributions"] >= mine["contributionCalendar"]["totalContributions"]:
+        mine.update(cc)
+
+
 def pr_count(token: str, fallback: int) -> int:
     """PRs opened in the past year. Search sees private repos the token can read;
     the contributions API leaves them out."""
     since = (datetime.now(timezone.utc) - timedelta(days=365)).strftime("%Y-%m-%d")
     try:
         q = urllib.parse.quote(f"type:pr author:{LOGIN} created:>={since}")
-        return http_json(f"https://api.github.com/search/issues?q={q}&per_page=1", token)["total_count"]
+        found = http_json(f"https://api.github.com/search/issues?q={q}&per_page=1", token)["total_count"]
+        return max(found, fallback)
     except Exception as exc:
         print(f"warn: pr search: {exc}", file=sys.stderr)
         return fallback
@@ -549,6 +574,9 @@ def main() -> None:
     if not token:
         raise SystemExit("Set GITHUB_TOKEN")
     user = fetch_profile(token)
+    public_token = os.environ.get("PUBLIC_TOKEN")
+    if public_token and public_token != token:
+        use_public_calendar(user, public_token)
     user["prs"] = pr_count(token, user["contributionsCollection"]["totalPullRequestContributions"])
     times, per_repo = fetch_commits(token, user)
     shipped = fetch_shipped(token)
