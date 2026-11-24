@@ -149,12 +149,49 @@ def fetch_profile(token: str) -> dict:
     return user
 
 
-def fetch_commit_times(token: str, user: dict) -> list[datetime]:
+VISIBLE_Q = """
+query($login: String!, $after: String) {
+  user(login: $login) {
+    repositories(ownerAffiliations: [OWNER, COLLABORATOR, ORGANIZATION_MEMBER], first: 100,
+                 after: $after, orderBy: {field: PUSHED_AT, direction: DESC}) {
+      pageInfo { hasNextPage endCursor }
+      nodes { nameWithOwner isPrivate pushedAt }
+    }
+  }
+}
+"""
+
+
+def candidate_repos(token: str, user: dict, since: str) -> dict[str, bool]:
+    """Repos that may hold the user's commits from the past year -> isPrivate.
+
+    The contributions API only itemises public repos (private work comes back as one
+    restricted count), so also walk every repo the token can see, pushed since `since`.
+    """
+    repos = {i["repository"]["nameWithOwner"]: i["repository"]["isPrivate"]
+             for i in user["contributionsCollection"]["commitContributionsByRepository"]}
+    after = None
+    while True:
+        page = gql(token, VISIBLE_Q, login=LOGIN, after=after)["user"]["repositories"]
+        for n in page["nodes"]:
+            if n["pushedAt"] < since:
+                return repos
+            repos.setdefault(n["nameWithOwner"], n["isPrivate"])
+        if not page["pageInfo"]["hasNextPage"]:
+            return repos
+        after = page["pageInfo"]["endCursor"]
+
+
+def fetch_commits(token: str, user: dict) -> tuple[list[datetime], dict[str, tuple[bool, int]]]:
+    """Authored commit times on default branches over the past year, plus per-repo counts."""
     since = (datetime.now(timezone.utc) - timedelta(days=365)).strftime("%Y-%m-%dT%H:%M:%SZ")
     times: list[datetime] = []
-    for item in user["contributionsCollection"]["commitContributionsByRepository"]:
-        owner, name = item["repository"]["nameWithOwner"].split("/")
-        after = None
+    per_repo: dict[str, tuple[bool, int]] = {}
+    for full, private in candidate_repos(token, user, since).items():
+        owner, name = full.split("/")
+        if "backup" in name.lower():  # automated snapshots, not work
+            continue
+        after, count = None, 0
         while True:
             repo = gql(token, HISTORY_Q, owner=owner, name=name, author=user["id"],
                        since=since, after=after)["repository"]
@@ -164,10 +201,13 @@ def fetch_commit_times(token: str, user: dict) -> list[datetime]:
             hist = ref["target"]["history"]
             times += [datetime.fromisoformat(n["authoredDate"].replace("Z", "+00:00"))
                       for n in hist["nodes"]]
+            count += len(hist["nodes"])
             if not hist["pageInfo"]["hasNextPage"]:
                 break
             after = hist["pageInfo"]["endCursor"]
-    return times
+        if count:
+            per_repo[full] = (private, count)
+    return times, per_repo
 
 
 def fetch_source(source: str, repo: str, token: str) -> dict:
@@ -250,18 +290,12 @@ def languages(repos: list[dict], top: int = 6) -> list[tuple[str, str, float]]:
     return out
 
 
-def focus_rows(user: dict, top: int = 6) -> list[tuple[str, int]]:
-    items = user["contributionsCollection"]["commitContributionsByRepository"]
-    public = [(i["repository"]["nameWithOwner"], i["contributions"]["totalCount"])
-              for i in items if not i["repository"]["isPrivate"]]
-    private = sum(i["contributions"]["totalCount"] for i in items if i["repository"]["isPrivate"])
-    public = [(n.split("/", 1)[1] if n.startswith(LOGIN + "/") else n, c) for n, c in public]
+def focus_rows(per_repo: dict[str, tuple[bool, int]], top: int = 5) -> tuple[list[tuple[str, int]], int]:
+    """Top public repos by commits, and the private total (names stay hidden)."""
+    public = [(n.split("/", 1)[1] if n.startswith(LOGIN + "/") else n, c)
+              for n, (private, c) in per_repo.items() if not private]
     public.sort(key=lambda r: r[1], reverse=True)
-    rows = public[: top - (1 if private else 0)]
-    if private:
-        rows.append(("private repos", private))
-        rows.sort(key=lambda r: r[1], reverse=True)
-    return rows
+    return public[:top], sum(c for is_private, c in per_repo.values() if is_private)
 
 
 def fmt(n: int) -> str:
@@ -345,22 +379,26 @@ def card_overview(user: dict, t: dict) -> str:
     return svg(t, W, ly + 22, b, f"GitHub activity for {LOGIN}")
 
 
-def card_focus(user: dict, t: dict) -> str:
-    rows = focus_rows(user)
+def card_focus(per_repo: dict[str, tuple[bool, int]], t: dict) -> str:
+    rows, private = focus_rows(per_repo)
     W, inner = HALF_W, HALF_W - PAD * 2
     b = [f'<text x="{PAD}" y="34" class="h">Where the commits went</text>',
          f'<text x="{W - PAD}" y="34" class="sm" text-anchor="end">past year</text>']
+    # Bars compare public repos with each other; the private total sits below as a number.
     peak = max((c for _, c in rows), default=1)
     y = 62
     for name, count in rows:
-        is_private = name == "private repos"
-        b.append(f'<text x="{PAD}" y="{y}" class="lbl"><tspan class="{"" if is_private else "strong"}">'
-                 f'{escape(name)}</tspan></text>')
+        b.append(f'<text x="{PAD}" y="{y}" class="lbl"><tspan class="strong">{escape(name)}</tspan></text>')
         b.append(f'<text x="{W - PAD}" y="{y}" class="lbl" text-anchor="end">{fmt(count)}</text>')
         b.append(f'<rect x="{PAD}" y="{y + 6}" width="{inner}" height="4" rx="2" fill="{t["track"]}"/>')
         b.append(f'<rect x="{PAD}" y="{y + 6}" width="{max(4, inner * count / peak):.1f}" height="4" rx="2" '
-                 f'fill="{t["muted"] if is_private else t["bar"]}"/>')
+                 f'fill="{t["bar"]}"/>')
         y += 30
+    if private:
+        b.append(f'<line x1="{PAD}" y1="{y - 8}" x2="{W - PAD}" y2="{y - 8}" stroke="{t["border"]}"/>')
+        b.append(f'<text x="{PAD}" y="{y + 12}" class="lbl">Private repos</text>')
+        b.append(f'<text x="{W - PAD}" y="{y + 12}" class="lbl" text-anchor="end">'
+                 f'<tspan class="strong">{fmt(private)}</tspan></text>')
     return svg(t, W, 248, b, "Commits per repository over the past year")
 
 
@@ -380,7 +418,7 @@ def card_hours(times: list[datetime], t: dict) -> str:
         for hour, n in enumerate(row):
             cx = left + hour * cell + cell / 2
             if n:
-                r = 1.5 + (cell / 2 - 1.5) * (n / peak) ** 0.5
+                r = 1.5 + (cell / 2 - 1.5) * n / peak
                 b.append(f'<circle cx="{cx:.1f}" cy="{cy}" r="{r:.2f}" fill="{t["bar"]}">'
                          f'<title>{WEEKDAYS[d]} {hour:02d}:00 — {n}</title></circle>')
             else:
@@ -498,12 +536,12 @@ def main() -> None:
     if not token:
         raise SystemExit("Set GITHUB_TOKEN")
     user = fetch_profile(token)
-    times = fetch_commit_times(token, user)
+    times, per_repo = fetch_commits(token, user)
     shipped = fetch_shipped(token)
     OUT.mkdir(exist_ok=True)
     for theme, t in THEMES.items():
         (OUT / f"overview-{theme}.svg").write_text(card_overview(user, t), encoding="utf-8")
-        (OUT / f"focus-{theme}.svg").write_text(card_focus(user, t), encoding="utf-8")
+        (OUT / f"focus-{theme}.svg").write_text(card_focus(per_repo, t), encoding="utf-8")
         (OUT / f"hours-{theme}.svg").write_text(card_hours(times, t), encoding="utf-8")
         (OUT / f"shipped-{theme}.svg").write_text(card_shipped(shipped, t), encoding="utf-8")
     update_readme(token)
