@@ -1,7 +1,15 @@
-"""Render profile stats as SVG cards (dark and light) from the GitHub GraphQL API.
+"""Render the profile's SVG cards (dark + light) from live data.
+
+Cards:
+  overview   numbers, weekly activity, languages
+  focus      where the past year's commits went
+  hours      when commits happen (weekday x hour)
+  shipped    live download / star counts for released projects
 
 Usage: GITHUB_TOKEN=... python scripts/stats.py [login]
-Stdlib only, so the workflow needs no dependencies.
+Stdlib only. A token that can read private repos (STATS_TOKEN in the
+workflow) adds private work to the aggregates; private repo names are
+never written out.
 """
 
 from __future__ import annotations
@@ -10,26 +18,88 @@ import json
 import os
 import sys
 import urllib.request
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from html import escape
 from pathlib import Path
 
 LOGIN = sys.argv[1] if len(sys.argv) > 1 else "BazZziliuS"
-OUT = Path(__file__).resolve().parent.parent / "assets"
+ROOT = Path(__file__).resolve().parent.parent
+OUT = ROOT / "assets"
+CACHE = OUT / "metrics.json"
+TZ = timezone(timedelta(hours=int(os.environ.get("TZ_OFFSET", "3"))))
+TZ_LABEL = os.environ.get("TZ_LABEL", "UTC+3")
 
-QUERY = """
+# Released projects shown on the "shipped" card.
+SHIPPED = [
+    {
+        "name": "KillSwitch",
+        "what": "Per-app kill switch for Windows",
+        "repo": "BazZziliuS/KillSwitch",
+        "sources": ["gh_releases"],
+    },
+    {
+        "name": "Mekanism Stack Processor",
+        "what": "NeoForge mod, batch processing",
+        "repo": "BazZziliuS/Mekanism-Stack-Processor",
+        "sources": ["modrinth:mekanism-stack-processor", "curseforge:mekanism-stack-processor"],
+    },
+    {
+        "name": "boostylib",
+        "what": "Async Python client for Boosty",
+        "repo": "BazZziliuS/boostylib",
+        "sources": ["pypi:boostylib"],
+    },
+]
+
+# Config / markup languages that say little about what someone writes.
+SKIP_LANGS = {"HTML", "CSS", "SCSS", "MDX", "Batchfile", "PowerShell", "Shell",
+              "Dockerfile", "Makefile", "Mustache", "Jinja", "FreeMarker",
+              "GLSL", "ShaderLab", "HLSL"}
+
+THEMES = {
+    "dark": {"text": "#e6edf3", "muted": "#8b949e", "border": "#30363d",
+             "track": "#21262d", "bar": "#3fb950"},
+    "light": {"text": "#1f2328", "muted": "#59636e", "border": "#d0d7de",
+              "track": "#eff2f5", "bar": "#1a7f37"},
+}
+FONT = "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif"
+MONTHS = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split()
+WEEKDAYS = "Mon Tue Wed Thu Fri Sat Sun".split()
+FULL_W, HALF_W, PAD = 840, 412, 24
+
+
+# ---------------------------------------------------------------- fetching
+
+def http_json(url: str, token: str | None = None, body: dict | None = None):
+    headers = {"User-Agent": "profile-stats", "Accept": "application/json"}
+    if token:
+        headers["Authorization"] = f"bearer {token}"
+    data = json.dumps(body).encode() if body is not None else None
+    req = urllib.request.Request(url, data=data, headers=headers)
+    with urllib.request.urlopen(req, timeout=30) as resp:
+        return json.load(resp)
+
+
+def gql(token: str, query: str, **variables):
+    body = http_json("https://api.github.com/graphql", token, {"query": query, "variables": variables})
+    if body.get("errors"):
+        raise SystemExit(f"GraphQL error: {body['errors']}")
+    return body["data"]
+
+
+PROFILE_Q = """
 query($login: String!, $after: String) {
   user(login: $login) {
-    createdAt
+    id
     contributionsCollection {
-      totalCommitContributions
       totalPullRequestContributions
-      totalPullRequestReviewContributions
-      totalIssueContributions
-      restrictedContributionsCount
       contributionCalendar {
         totalContributions
         weeks { contributionDays { date contributionCount } }
+      }
+      commitContributionsByRepository(maxRepositories: 100) {
+        repository { nameWithOwner isPrivate }
+        contributions { totalCount }
       }
     }
     repositories(ownerAffiliations: OWNER, isFork: false, privacy: PUBLIC,
@@ -46,60 +116,106 @@ query($login: String!, $after: String) {
 }
 """
 
-# Config / markup languages that inflate byte counts without saying much.
-SKIP_LANGS = {"HTML", "CSS", "SCSS", "MDX", "Batchfile", "PowerShell", "Shell",
-              "Dockerfile", "Makefile", "Mustache", "Jinja", "FreeMarker",
-              "GLSL", "ShaderLab", "HLSL"}
-
-THEMES = {
-    "dark": {
-        "text": "#e6edf3", "muted": "#8b949e", "border": "#30363d",
-        "track": "#21262d", "bar": "#3fb950", "bar_dim": "#196c2e",
-    },
-    "light": {
-        "text": "#1f2328", "muted": "#59636e", "border": "#d0d7de",
-        "track": "#eff2f5", "bar": "#1a7f37", "bar_dim": "#7ee2a8",
-    },
+HISTORY_Q = """
+query($owner: String!, $name: String!, $author: ID!, $since: GitTimestamp!, $after: String) {
+  repository(owner: $owner, name: $name) {
+    defaultBranchRef { target { ... on Commit {
+      history(author: {id: $author}, since: $since, first: 100, after: $after) {
+        pageInfo { hasNextPage endCursor }
+        nodes { authoredDate }
+      }
+    } } }
+  }
 }
-
-FONT = "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif"
-MONTHS = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split()
+"""
 
 
-def gql(token: str, variables: dict) -> dict:
-    req = urllib.request.Request(
-        "https://api.github.com/graphql",
-        data=json.dumps({"query": QUERY, "variables": variables}).encode(),
-        headers={"Authorization": f"bearer {token}", "User-Agent": "profile-stats"},
-    )
-    with urllib.request.urlopen(req, timeout=30) as resp:
-        body = json.load(resp)
-    if body.get("errors"):
-        raise SystemExit(f"GraphQL error: {body['errors']}")
-    return body["data"]["user"]
-
-
-def fetch(token: str) -> dict:
-    user = gql(token, {"login": LOGIN})
+def fetch_profile(token: str) -> dict:
+    user = gql(token, PROFILE_Q, login=LOGIN)["user"]
     repos = list(user["repositories"]["nodes"])
     page = user["repositories"]["pageInfo"]
     while page["hasNextPage"]:
-        nxt = gql(token, {"login": LOGIN, "after": page["endCursor"]})
+        nxt = gql(token, PROFILE_Q, login=LOGIN, after=page["endCursor"])["user"]
         repos += nxt["repositories"]["nodes"]
         page = nxt["repositories"]["pageInfo"]
     user["repos"] = repos
     return user
 
 
+def fetch_commit_times(token: str, user: dict) -> list[datetime]:
+    since = (datetime.now(timezone.utc) - timedelta(days=365)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    times: list[datetime] = []
+    for item in user["contributionsCollection"]["commitContributionsByRepository"]:
+        owner, name = item["repository"]["nameWithOwner"].split("/")
+        after = None
+        while True:
+            repo = gql(token, HISTORY_Q, owner=owner, name=name, author=user["id"],
+                       since=since, after=after)["repository"]
+            ref = repo and repo["defaultBranchRef"]
+            if not ref:
+                break
+            hist = ref["target"]["history"]
+            times += [datetime.fromisoformat(n["authoredDate"].replace("Z", "+00:00"))
+                      for n in hist["nodes"]]
+            if not hist["pageInfo"]["hasNextPage"]:
+                break
+            after = hist["pageInfo"]["endCursor"]
+    return times
+
+
+def fetch_source(source: str, repo: str, token: str) -> dict:
+    """One external metric. Returns {"downloads": n} and/or other fields."""
+    kind, _, arg = source.partition(":")
+    if kind == "gh_releases":
+        rels = http_json(f"https://api.github.com/repos/{repo}/releases?per_page=100", token)
+        return {"downloads": sum(a["download_count"] for r in rels for a in r["assets"])}
+    if kind == "modrinth":
+        return {"downloads": http_json(f"https://api.modrinth.com/v2/project/{arg}")["downloads"]}
+    if kind == "curseforge":
+        return {"downloads": http_json(f"https://api.cfwidget.com/minecraft/mc-mods/{arg}")["downloads"]["total"]}
+    if kind == "pypi":
+        rows = http_json(f"https://pypistats.org/api/packages/{arg}/overall?mirrors=false")["data"]
+        return {"downloads": sum(r["downloads"] for r in rows)}
+    raise ValueError(source)
+
+
+def fetch_shipped(token: str) -> list[dict]:
+    """Live metrics, falling back to the last good value per source when an API is down."""
+    cache = json.loads(CACHE.read_text()) if CACHE.exists() else {}
+    out = []
+    for proj in SHIPPED:
+        repo = http_json(f"https://api.github.com/repos/{proj['repo']}", token)
+        try:
+            rel = http_json(f"https://api.github.com/repos/{proj['repo']}/releases/latest", token)
+            version = rel["tag_name"]
+        except Exception:
+            version = None
+        downloads = 0
+        for src in proj["sources"]:
+            key = f"{src}@{proj['repo']}" if ":" not in src else src
+            try:
+                value = fetch_source(src, proj["repo"], token)["downloads"]
+                cache[key] = value
+            except Exception as exc:  # keep the card rendering on a flaky API
+                print(f"warn: {src}: {exc}", file=sys.stderr)
+                value = cache.get(key, 0)
+            downloads += value
+        out.append({**proj, "downloads": downloads, "stars": repo["stargazers_count"],
+                    "version": version})
+    CACHE.write_text(json.dumps(cache, indent=2, sort_keys=True) + "\n")
+    return out
+
+
+# ---------------------------------------------------------------- shaping
+
 def streaks(days: list[dict]) -> tuple[int, int, int]:
-    """Return (current, longest, active_days). Today with zero doesn't break the current streak."""
     counts = [d["contributionCount"] for d in days]
     longest = run = 0
     for c in counts:
         run = run + 1 if c else 0
         longest = max(longest, run)
     current = 0
-    tail = counts[:-1] if counts and counts[-1] == 0 else counts
+    tail = counts[:-1] if counts and counts[-1] == 0 else counts  # today isn't over yet
     for c in reversed(tail):
         if not c:
             break
@@ -108,41 +224,69 @@ def streaks(days: list[dict]) -> tuple[int, int, int]:
 
 
 def languages(repos: list[dict], top: int = 6) -> list[tuple[str, str, float]]:
-    # Each repo gets equal weight, split by its byte mix. Raw bytes would let one
-    # repo with vendored or generated code swamp everything else.
+    # Equal weight per repo, so one repo full of generated code can't swamp the rest.
     sizes: dict[str, float] = {}
     colors: dict[str, str] = {}
     for repo in repos:
         edges = [e for e in repo["languages"]["edges"] if e["node"]["name"] not in SKIP_LANGS]
-        repo_total = sum(e["size"] for e in edges)
-        for edge in edges:
-            name = edge["node"]["name"]
-            sizes[name] = sizes.get(name, 0) + edge["size"] / repo_total
-            colors[name] = edge["node"]["color"] or "#8b949e"
+        total = sum(e["size"] for e in edges)
+        for e in edges:
+            name = e["node"]["name"]
+            sizes[name] = sizes.get(name, 0) + e["size"] / total
+            colors[name] = e["node"]["color"] or "#8b949e"
     total = sum(sizes.values()) or 1
     ranked = sorted(sizes.items(), key=lambda kv: kv[1], reverse=True)
-    head = ranked[:top]
+    out = [(n, colors[n], s / total) for n, s in ranked[:top]]
     rest = sum(s for _, s in ranked[top:])
-    out = [(n, colors[n], s / total) for n, s in head]
     if rest:
         out.append(("Other", "#8b949e", rest / total))
     return out
+
+
+def focus_rows(user: dict, top: int = 6) -> list[tuple[str, int]]:
+    items = user["contributionsCollection"]["commitContributionsByRepository"]
+    public = [(i["repository"]["nameWithOwner"], i["contributions"]["totalCount"])
+              for i in items if not i["repository"]["isPrivate"]]
+    private = sum(i["contributions"]["totalCount"] for i in items if i["repository"]["isPrivate"])
+    public = [(n.split("/", 1)[1] if n.startswith(LOGIN + "/") else n, c) for n, c in public]
+    public.sort(key=lambda r: r[1], reverse=True)
+    rows = public[: top - (1 if private else 0)]
+    if private:
+        rows.append(("private repos", private))
+        rows.sort(key=lambda r: r[1], reverse=True)
+    return rows
 
 
 def fmt(n: int) -> str:
     return f"{n:,}"
 
 
-def render(data: dict, theme: str) -> str:
-    t = THEMES[theme]
-    cc = data["contributionsCollection"]
+# ---------------------------------------------------------------- drawing
+
+def svg(t: dict, w: int, h: int, body: list[str], label: str) -> str:
+    style = f"""
+    text {{ font-family: {FONT}; fill: {t["muted"]}; }}
+    .num {{ font-size: 24px; font-weight: 600; fill: {t["text"]}; }}
+    .lbl {{ font-size: 12px; }}
+    .sm {{ font-size: 11px; }}
+    .h {{ font-size: 13px; font-weight: 600; fill: {t["text"]}; }}
+    .strong {{ fill: {t["text"]}; font-weight: 500; }}
+    """
+    return (
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" '
+        f'role="img" aria-label="{escape(label)}"><style>{style}</style>'
+        f'<rect x="0.5" y="0.5" width="{w - 1}" height="{h - 1}" rx="10" fill="none" stroke="{t["border"]}"/>'
+        + "".join(body) + "</svg>\n"
+    )
+
+
+def card_overview(user: dict, t: dict) -> str:
+    cc = user["contributionsCollection"]
     cal = cc["contributionCalendar"]
     days = [d for w in cal["weeks"] for d in w["contributionDays"]]
     current, longest, active = streaks(days)
-    langs = languages(data["repos"])
-
-    W, PAD = 840, 28
-    inner = W - PAD * 2
+    W, inner = FULL_W, FULL_W - PAD * 2
+    b: list[str] = []
 
     tiles = [
         (fmt(cal["totalContributions"]), "contributions, past year"),
@@ -151,93 +295,132 @@ def render(data: dict, theme: str) -> str:
         (f"{longest} d", "longest streak"),
         (fmt(cc["totalPullRequestContributions"]), "pull requests"),
     ]
-
-    parts: list[str] = []
-    add = parts.append
-
-    # Numbers row
     col = inner / len(tiles)
     for i, (value, label) in enumerate(tiles):
         x = PAD + i * col
-        add(f'<text x="{x:.1f}" y="62" class="num">{escape(value)}</text>')
-        add(f'<text x="{x:.1f}" y="84" class="lbl">{escape(label)}</text>')
+        b.append(f'<text x="{x:.1f}" y="50" class="num">{escape(value)}</text>')
+        b.append(f'<text x="{x:.1f}" y="70" class="lbl">{escape(label)}</text>')
 
-    # Weekly activity
     weeks = [sum(d["contributionCount"] for d in w["contributionDays"]) for w in cal["weeks"]]
-    top_y, chart_h = 124, 84
-    add(f'<text x="{PAD}" y="{top_y}" class="h">Weekly activity</text>')
-    base = top_y + 16 + chart_h
+    chart_h, base = 56, 158
     peak = max(weeks) or 1
     gap = 3
     bw = (inner - gap * (len(weeks) - 1)) / len(weeks)
-    add(f'<line x1="{PAD}" y1="{base + 0.5}" x2="{W - PAD}" y2="{base + 0.5}" stroke="{t["border"]}"/>')
     last_month = None
     for i, (w, total) in enumerate(zip(cal["weeks"], weeks)):
         x = PAD + i * (bw + gap)
-        h = max(2.0, chart_h * total / peak) if total else 2.0
-        fill = t["bar"] if total else t["track"]
+        h = max(2.0, chart_h * total / peak)
         first = w["contributionDays"][0]["date"]
-        add(f'<rect x="{x:.2f}" y="{base - h:.2f}" width="{bw:.2f}" height="{h:.2f}" rx="1.5" fill="{fill}">'
-            f'<title>Week of {first}: {total}</title></rect>')
+        b.append(f'<rect x="{x:.2f}" y="{base - h:.2f}" width="{bw:.2f}" height="{h:.2f}" rx="1.5" '
+                 f'fill="{t["bar"] if total else t["track"]}"><title>Week of {first}: {total}</title></rect>')
         month = date.fromisoformat(first).month
         if month != last_month and i < len(weeks) - 2:
             if last_month is not None:
-                add(f'<text x="{x:.1f}" y="{base + 18}" class="lbl">{MONTHS[month - 1]}</text>')
+                b.append(f'<text x="{x:.1f}" y="{base + 16}" class="sm">{MONTHS[month - 1]}</text>')
             last_month = month
 
-    # Languages
-    ly = base + 58
-    add(f'<text x="{PAD}" y="{ly}" class="h">Languages across public repos</text>')
-    by = ly + 14
-    add(f'<clipPath id="r"><rect x="{PAD}" y="{by}" width="{inner}" height="8" rx="4"/></clipPath>')
-    add('<g clip-path="url(#r)">')
+    by = base + 36
+    b.append(f'<clipPath id="r"><rect x="{PAD}" y="{by}" width="{inner}" height="8" rx="4"/></clipPath><g clip-path="url(#r)">')
     x = PAD
+    langs = languages(user["repos"])
+    for _, color, share in langs:
+        b.append(f'<rect x="{x:.2f}" y="{by}" width="{inner * share + 0.5:.2f}" height="8" fill="{color}"/>')
+        x += inner * share
+    b.append("</g>")
+    lx, ly = PAD, by + 30
     for name, color, share in langs:
-        w = inner * share
-        add(f'<rect x="{x:.2f}" y="{by}" width="{w + 0.5:.2f}" height="8" fill="{color}"/>')
-        x += w
-    add("</g>")
-    lx, ly2 = PAD, by + 32
-    for name, color, share in langs:
-        label = f"{name} {share * 100:.0f}%"
-        width = 14 + len(label) * 6.6
+        width = 14 + len(f"{name} {share * 100:.0f}%") * 6.6
         if lx + width > W - PAD:
-            lx, ly2 = PAD, ly2 + 22
-        add(f'<circle cx="{lx + 4}" cy="{ly2 - 4}" r="4" fill="{color}"/>')
-        add(f'<text x="{lx + 14}" y="{ly2}" class="lbl"><tspan class="strong">{escape(name)}</tspan> {share * 100:.0f}%</text>')
+            lx, ly = PAD, ly + 20
+        b.append(f'<circle cx="{lx + 4}" cy="{ly - 4}" r="4" fill="{color}"/>')
+        b.append(f'<text x="{lx + 14}" y="{ly}" class="lbl"><tspan class="strong">{escape(name)}</tspan> {share * 100:.0f}%</text>')
         lx += width + 22
+    return svg(t, W, ly + 22, b, f"GitHub activity for {LOGIN}")
 
-    H = ly2 + 26
-    updated = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    add(f'<text x="{W - PAD}" y="{H - 10}" class="foot" text-anchor="end">updated {updated}</text>')
 
-    style = f"""
-    text {{ font-family: {FONT}; fill: {t["muted"]}; }}
-    .num {{ font-size: 26px; font-weight: 600; fill: {t["text"]}; }}
-    .lbl {{ font-size: 12px; }}
-    .h {{ font-size: 13px; font-weight: 600; fill: {t["text"]}; }}
-    .strong {{ fill: {t["text"]}; font-weight: 500; }}
-    .foot {{ font-size: 10px; opacity: .7; }}
-    """
-    return (
-        f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" '
-        f'role="img" aria-label="GitHub stats for {LOGIN}">'
-        f"<style>{style}</style>"
-        f'<rect x="0.5" y="0.5" width="{W - 1}" height="{H - 1}" rx="10" fill="none" stroke="{t["border"]}"/>'
-        + "".join(parts)
-        + "</svg>\n"
-    )
+def card_focus(user: dict, t: dict) -> str:
+    rows = focus_rows(user)
+    W, inner = HALF_W, HALF_W - PAD * 2
+    b = [f'<text x="{PAD}" y="34" class="h">Where the commits went</text>',
+         f'<text x="{W - PAD}" y="34" class="sm" text-anchor="end">past year</text>']
+    peak = max((c for _, c in rows), default=1)
+    y = 62
+    for name, count in rows:
+        is_private = name == "private repos"
+        b.append(f'<text x="{PAD}" y="{y}" class="lbl"><tspan class="{"" if is_private else "strong"}">'
+                 f'{escape(name)}</tspan></text>')
+        b.append(f'<text x="{W - PAD}" y="{y}" class="lbl" text-anchor="end">{fmt(count)}</text>')
+        b.append(f'<rect x="{PAD}" y="{y + 6}" width="{inner}" height="4" rx="2" fill="{t["track"]}"/>')
+        b.append(f'<rect x="{PAD}" y="{y + 6}" width="{max(4, inner * count / peak):.1f}" height="4" rx="2" '
+                 f'fill="{t["muted"] if is_private else t["bar"]}"/>')
+        y += 30
+    return svg(t, W, 248, b, "Commits per repository over the past year")
+
+
+def card_hours(times: list[datetime], t: dict) -> str:
+    grid = [[0] * 24 for _ in range(7)]
+    for ts in times:
+        local = ts.astimezone(TZ)
+        grid[local.weekday()][local.hour] += 1
+    peak = max(max(r) for r in grid) or 1
+    W = HALF_W
+    left, top, cell = PAD + 30, 54, (HALF_W - PAD * 2 - 30) / 24
+    b = [f'<text x="{PAD}" y="34" class="h">When I commit</text>',
+         f'<text x="{W - PAD}" y="34" class="sm" text-anchor="end">{fmt(len(times))} commits, {TZ_LABEL}</text>']
+    for d, row in enumerate(grid):
+        cy = top + d * 22 + 11
+        b.append(f'<text x="{PAD}" y="{cy + 4}" class="sm">{WEEKDAYS[d]}</text>')
+        for hour, n in enumerate(row):
+            cx = left + hour * cell + cell / 2
+            if n:
+                r = 1.5 + (cell / 2 - 1.5) * (n / peak) ** 0.5
+                b.append(f'<circle cx="{cx:.1f}" cy="{cy}" r="{r:.2f}" fill="{t["bar"]}">'
+                         f'<title>{WEEKDAYS[d]} {hour:02d}:00 — {n}</title></circle>')
+            else:
+                b.append(f'<circle cx="{cx:.1f}" cy="{cy}" r="1" fill="{t["border"]}"/>')
+    for hour in (0, 6, 12, 18):
+        b.append(f'<text x="{left + hour * cell + cell / 2:.1f}" y="{top + 7 * 22 + 14}" class="sm" '
+                 f'text-anchor="middle">{hour:02d}</text>')
+    busiest = max(range(24), key=lambda h: sum(grid[d][h] for d in range(7)))
+    b.append(f'<text x="{PAD}" y="{top + 7 * 22 + 34}" class="sm">Busiest hour: '
+             f'<tspan class="strong">{busiest:02d}:00</tspan></text>')
+    return svg(t, W, 248, b, "Commits by weekday and hour")
+
+
+def card_shipped(projects: list[dict], t: dict) -> str:
+    W, inner = FULL_W, FULL_W - PAD * 2
+    col = inner / len(projects)
+    b = []
+    for i, p in enumerate(projects):
+        x = PAD + i * col
+        if i:
+            b.append(f'<line x1="{x - 16:.1f}" y1="22" x2="{x - 16:.1f}" y2="104" stroke="{t["border"]}"/>')
+        b.append(f'<text x="{x:.1f}" y="38" class="h">{escape(p["name"])}</text>')
+        b.append(f'<text x="{x:.1f}" y="56" class="sm">{escape(p["what"])}</text>')
+        b.append(f'<text x="{x:.1f}" y="90" class="num">{fmt(p["downloads"])}</text>')
+        meta = ["downloads"]
+        if p["version"]:
+            meta.append(p["version"])
+        if p["stars"]:
+            meta.append(f"★ {p['stars']}")
+        b.append(f'<text x="{x:.1f}" y="108" class="lbl">{escape(" · ".join(meta))}</text>')
+    return svg(t, W, 128, b, "Download counts for released projects")
 
 
 def main() -> None:
     token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
     if not token:
         raise SystemExit("Set GITHUB_TOKEN")
-    data = fetch(token)
+    user = fetch_profile(token)
+    times = fetch_commit_times(token, user)
+    shipped = fetch_shipped(token)
     OUT.mkdir(exist_ok=True)
-    for theme in THEMES:
-        (OUT / f"stats-{theme}.svg").write_text(render(data, theme), encoding="utf-8")
-    print("ok")
+    for theme, t in THEMES.items():
+        (OUT / f"overview-{theme}.svg").write_text(card_overview(user, t), encoding="utf-8")
+        (OUT / f"focus-{theme}.svg").write_text(card_focus(user, t), encoding="utf-8")
+        (OUT / f"hours-{theme}.svg").write_text(card_hours(times, t), encoding="utf-8")
+        (OUT / f"shipped-{theme}.svg").write_text(card_shipped(shipped, t), encoding="utf-8")
+    print(f"ok: {len(times)} commits, {len(shipped)} projects")
 
 
 if __name__ == "__main__":
