@@ -69,6 +69,9 @@ THEMES = {
              "track": "#21262d", "bar": "#3fb950"},
     "light": {"text": "#1f2328", "muted": "#59636e", "border": "#d0d7de",
               "track": "#eff2f5", "bar": "#1a7f37"},
+    # Filled background for hosts that can't switch images by color scheme (GitLab).
+    "solid": {"text": "#e6edf3", "muted": "#8b949e", "border": "#30363d",
+              "track": "#21262d", "bar": "#3fb950", "bg": "#0d1117"},
 }
 FONT = "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif"
 MONTHS = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split()
@@ -354,7 +357,7 @@ def svg(t: dict, w: int, h: int, body: list[str], label: str) -> str:
     return (
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" '
         f'role="img" aria-label="{escape(label)}"><style>{style}</style>'
-        f'<rect x="0.5" y="0.5" width="{w - 1}" height="{h - 1}" rx="10" fill="none" stroke="{t["border"]}"/>'
+        f'<rect x="0.5" y="0.5" width="{w - 1}" height="{h - 1}" rx="10" fill="{t.get("bg", "none")}" stroke="{t["border"]}"/>'
         + "".join(body) + "</svg>\n"
     )
 
