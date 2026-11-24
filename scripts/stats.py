@@ -6,6 +6,9 @@ Cards:
   hours      when commits happen (weekday x hour)
   shipped    live download / star counts for released projects
 
+It also rewrites the block between the live markers in README.md with
+repos pushed to in the last two weeks and the latest blog posts.
+
 Usage: GITHUB_TOKEN=... python scripts/stats.py [login]
 Stdlib only. A token that can read private repos (STATS_TOKEN in the
 workflow) adds private work to the aggregates; private repo names are
@@ -17,7 +20,9 @@ from __future__ import annotations
 import json
 import os
 import sys
+import re
 import urllib.request
+import xml.etree.ElementTree as ET
 from datetime import date, datetime, timedelta, timezone
 from html import escape
 from pathlib import Path
@@ -28,6 +33,8 @@ OUT = ROOT / "assets"
 CACHE = OUT / "metrics.json"
 TZ = timezone(timedelta(hours=int(os.environ.get("TZ_OFFSET", "3"))))
 TZ_LABEL = os.environ.get("TZ_LABEL", "UTC+3")
+README = ROOT / "README.md"
+BLOG_RSS = "https://blog.cloudea.org/rss.xml"
 
 # Released projects shown on the "shipped" card.
 SHIPPED = [
@@ -407,6 +414,85 @@ def card_shipped(projects: list[dict], t: dict) -> str:
     return svg(t, W, 128, b, "Download counts for released projects")
 
 
+# ---------------------------------------------------------------- README block
+
+RECENT_Q = """
+query($login: String!, $since: GitTimestamp!) {
+  user(login: $login) {
+    id
+    repositories(ownerAffiliations: OWNER, isFork: false, privacy: PUBLIC, isArchived: false,
+                 first: 10, orderBy: {field: PUSHED_AT, direction: DESC}) {
+      nodes {
+        name url description
+        defaultBranchRef { target { ... on Commit { history(since: $since) { totalCount } } } }
+      }
+    }
+  }
+}
+"""
+
+
+def recent_repos(token: str, limit: int = 3, days: int = 14) -> list[dict]:
+    since = (datetime.now(timezone.utc) - timedelta(days=days)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    nodes = gql(token, RECENT_Q, login=LOGIN, since=since)["user"]["repositories"]["nodes"]
+    out = []
+    for n in nodes:
+        ref = n["defaultBranchRef"]
+        commits = ref["target"]["history"]["totalCount"] if ref else 0
+        if n["name"] != LOGIN and commits:
+            out.append({**n, "commits": commits})
+    return out[:limit]
+
+
+def blog_posts(limit: int = 3) -> list[dict]:
+    req = urllib.request.Request(BLOG_RSS, headers={"User-Agent": "profile-stats"})
+    with urllib.request.urlopen(req, timeout=30) as resp:
+        root = ET.fromstring(resp.read())
+    posts = []
+    for item in root.findall("channel/item")[:limit]:
+        when = datetime.strptime(item.findtext("pubDate"), "%a, %d %b %Y %H:%M:%S %Z")
+        posts.append({"title": item.findtext("title"), "link": item.findtext("link"),
+                      "date": f"{MONTHS[when.month - 1]} {when.year}"})
+    return posts
+
+
+def md(text: str) -> str:
+    return escape(text, quote=False).replace("[", "\\[").replace("]", "\\]")
+
+
+def update_readme(token: str) -> None:
+    text = README.read_text(encoding="utf-8")
+    start, end = "<!-- live:start -->", "<!-- live:end -->"
+    if start not in text:
+        return
+    left = ["<b>Now building</b>", ""]
+    for r in recent_repos(token):
+        line = f"- [{r['name']}]({r['url']}) <sub>{r['commits']} commit{'s' if r['commits'] != 1 else ''} in 2 weeks</sub>"
+        if r["description"]:
+            line += f"<br><sub>{md(r['description'])}</sub>"
+        left.append(line)
+    right = ["<b>Latest posts</b>", ""]
+    try:
+        for p in blog_posts():
+            right.append(f"- [{md(p['title'])}]({p['link']}) <sub>{p['date']}</sub>")
+    except Exception as exc:  # keep the previous list when the feed is down
+        print(f"warn: blog: {exc}", file=sys.stderr)
+        old = re.search(r"<b>Latest posts</b>\n\n(.*?)\n\n</td>", text, re.S)
+        if old:
+            right.append(old.group(1))
+    block = "\n".join([
+        start,
+        '<table><tr><td valign="top" width="50%">', "",
+        *left, "",
+        '</td><td valign="top" width="50%">', "",
+        *right, "",
+        "</td></tr></table>",
+        end,
+    ])
+    text = re.sub(re.escape(start) + r".*?" + re.escape(end), lambda _: block, text, flags=re.S)
+    README.write_text(text, encoding="utf-8")
+
+
 def main() -> None:
     token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
     if not token:
@@ -420,6 +506,7 @@ def main() -> None:
         (OUT / f"focus-{theme}.svg").write_text(card_focus(user, t), encoding="utf-8")
         (OUT / f"hours-{theme}.svg").write_text(card_hours(times, t), encoding="utf-8")
         (OUT / f"shipped-{theme}.svg").write_text(card_shipped(shipped, t), encoding="utf-8")
+    update_readme(token)
     print(f"ok: {len(times)} commits, {len(shipped)} projects")
 
 

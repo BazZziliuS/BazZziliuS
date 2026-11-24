@@ -32,6 +32,28 @@ Backend, bots, and the infrastructure under them.
 
 <br><br>
 
+<!-- live:start -->
+<table><tr><td valign="top" width="50%">
+
+<b>Now building</b>
+
+- [AioFrame](https://github.com/BazZziliuS/AioFrame) <sub>8 commits in 2 weeks</sub><br><sub>Telegram bot template on aiogram 3: async SQLAlchemy, Alembic, repository pattern, i18n, admin panel, Docker</sub>
+- [boostylib](https://github.com/BazZziliuS/boostylib) <sub>1 commit in 2 weeks</sub><br><sub>Async Python client for the Boosty API: subscriptions, posts, donations. On PyPI.</sub>
+- [Swipey](https://github.com/BazZziliuS/Swipey) <sub>2 commits in 2 weeks</sub><br><sub>Chrome extension that counts the TikTok, Shorts and Reels you watch and the time spent. Data stays local.</sub>
+
+</td><td valign="top" width="50%">
+
+<b>Latest posts</b>
+
+- [ЯПульт: как я вайбкодил пульт от умного дома, чтобы не жонглировать гаджетами](https://blog.cloudea.org/blog/2026/07-11-ya-pult-vibe-coding) <sub>Jul 2026</sub>
+- [StealthChat: спрятал сообщения в обычных предложениях — и заметил, что кошельки делают тот же трюк](https://blog.cloudea.org/blog/2026/03-24-stealthchat-wallet-keys) <sub>Mar 2026</sub>
+- [Supabase Self-Hosted: поднимаем свой Backend-as-a-Service](https://blog.cloudea.org/blog/2026/03-19-supabase-self-hosted) <sub>Mar 2026</sub>
+
+</td></tr></table>
+<!-- live:end -->
+
+<br>
+
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/stack-dark.svg">
   <img src="assets/stack-light.svg" width="560" alt="Python, Java, TypeScript, JavaScript, Rust, Lua, FastAPI, Next.js, React, Tailwind CSS, PostgreSQL, SQLite, Supabase, Docker, Linux, GitHub Actions, Git, Gradle">
@@ -39,7 +61,7 @@ Backend, bots, and the infrastructure under them.
 
 <br><br>
 
-Also: [AioFrame](https://github.com/BazZziliuS/AioFrame) bot template · [StealthChat](https://github.com/BazZziliuS/StealthChat) E2E for web messengers · [Cloudea Blog](https://blog.cloudea.org/)
+Also: [StealthChat](https://github.com/BazZziliuS/StealthChat) E2E for web messengers · [Cloudea Blog](https://blog.cloudea.org/)
 
 [Discord](https://fuix.io/discord) · [YouTube](https://youtube.com/@BazZziliuS) · [Blog](https://blog.cloudea.org/)
 
