@@ -2,10 +2,10 @@
 
 <h1>I build software.<br>Then I keep it running.</h1>
 
-Python developer and server administrator.<br>
+I'm Konstantin, a Python developer and server administrator.<br>
 Backend, bots, and the infrastructure under them.
 
-**1,800+** contributions last year · **3,700+** mod downloads · **7** languages
+**10 years** on GitHub · **3,700+** mod downloads · **8** languages
 
 <br>
 
@@ -38,6 +38,17 @@ If the network state can't be read, the apps are blocked. The block survives a c
 
 <br>
 
+## By the numbers
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/stats-dark.svg">
+  <img src="assets/stats-light.svg" width="100%" alt="GitHub activity: contributions over the past year, streaks, weekly activity and language breakdown">
+</picture>
+
+<sub>Rendered daily by a small script in this repo straight from the GitHub API. No third-party stat services.</sub>
+
+<br>
+
 ## More work
 
 | Project | What it does | Built with |
@@ -61,7 +72,7 @@ If the network state can't be read, the apps are blocked. The block survives a c
 
 | | |
 | :-- | :-- |
-| **Languages** | Python · Java · TypeScript · JavaScript · Rust · Go · Lua |
+| **Languages** | Python · Java · Kotlin · TypeScript · JavaScript · Rust · Go · Lua |
 | **Backend** | FastAPI · SQLAlchemy · Alembic · Pydantic · httpx · aiohttp · APScheduler |
 | **Bots** | aiogram · Disnake |
 | **Frontend** | Next.js · React · Tailwind CSS · shadcn/ui |
