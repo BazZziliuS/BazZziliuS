@@ -37,17 +37,17 @@ Backend, bots, and the infrastructure under them.
 
 <b>Now building</b>
 
+- [cloudea-blog](https://github.com/BazZziliuS/cloudea-blog) <sub>13 commits in 2 weeks</sub><br><sub>A modern blog and documentation platform.</sub>
 - [AioFrame](https://github.com/BazZziliuS/AioFrame) <sub>8 commits in 2 weeks</sub><br><sub>Telegram bot template on aiogram 3: async SQLAlchemy, Alembic, repository pattern, i18n, admin panel, Docker</sub>
 - [boostylib](https://github.com/BazZziliuS/boostylib) <sub>1 commit in 2 weeks</sub><br><sub>Async Python client for the Boosty API: subscriptions, posts, donations. On PyPI.</sub>
-- [Swipey](https://github.com/BazZziliuS/Swipey) <sub>2 commits in 2 weeks</sub><br><sub>Chrome extension that counts the TikTok, Shorts and Reels you watch and the time spent. Data stays local.</sub>
 
 </td><td valign="top" width="50%">
 
 <b>Latest posts</b>
 
+- [KillSwitch: отключаю интернет отдельным программам, когда падает VPN](https://blog.cloudea.org/blog/2026/11-24-killswitch) <sub>Nov 2026</sub>
 - [ЯПульт: как я вайбкодил пульт от умного дома, чтобы не жонглировать гаджетами](https://blog.cloudea.org/blog/2026/07-11-ya-pult-vibe-coding) <sub>Jul 2026</sub>
 - [StealthChat: спрятал сообщения в обычных предложениях — и заметил, что кошельки делают тот же трюк](https://blog.cloudea.org/blog/2026/03-24-stealthchat-wallet-keys) <sub>Mar 2026</sub>
-- [Supabase Self-Hosted: поднимаем свой Backend-as-a-Service](https://blog.cloudea.org/blog/2026/03-19-supabase-self-hosted) <sub>Mar 2026</sub>
 
 </td></tr></table>
 <!-- live:end -->
