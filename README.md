@@ -37,7 +37,7 @@ Backend, bots, and the infrastructure under them.
 
 <b>Now building</b>
 
-- [VoteFlow](https://github.com/BazZziliuS/VoteFlow) <sub>61 commits in 2 weeks</sub><br><sub>Automatic voting on monitoring sites (ratings) for game servers in order to automate the receipt of a reward for voting.</sub>
+- [VoteFlow](https://github.com/BazZziliuS/VoteFlow) <sub>62 commits in 2 weeks</sub><br><sub>Automatic voting on monitoring sites (ratings) for game servers in order to automate the receipt of a reward for voting.</sub>
 - [cloudea-blog](https://github.com/BazZziliuS/cloudea-blog) <sub>13 commits in 2 weeks</sub><br><sub>A modern blog and documentation platform.</sub>
 - [AioFrame](https://github.com/BazZziliuS/AioFrame) <sub>8 commits in 2 weeks</sub><br><sub>Telegram bot template on aiogram 3: async SQLAlchemy, Alembic, repository pattern, i18n, admin panel, Docker</sub>
 
